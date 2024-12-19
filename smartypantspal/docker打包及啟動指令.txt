@@ -1,0 +1,11 @@
+docker build -t backend .
+打包前確認smartypantspal\backend\src\config\DBconfig.js的主機名稱要是host: 'host.docker.internal',不然怎麼連都會是500
+docker run -p 80:80 -d backend
+
+docker build -t frontend .
+docker run -p 5173:5173 -d frontend
+
+docker-compose down
+docker-compose build --no-cache
+docker network create webnet
+docker-compose up --force-recreate -d 

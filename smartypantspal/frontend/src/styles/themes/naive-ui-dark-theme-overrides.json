@@ -1,0 +1,14 @@
+{
+  "common": {
+    "tableColor": "rgba(24, 56, 71, 1)",
+    "cardColor": "rgba(24, 56, 71, 1)",
+    "popoverColor": "rgba(59, 78, 86, 1)",
+    "modalColor": "rgba(36, 63, 75, 1)",
+    "bodyColor": "rgba(26, 43, 52, 1)",
+    "tagColor": "rgba(61, 67, 69, 1)",
+    "primaryColor": "#FFDA78FF",
+    "primaryColorHover": "#FFE398FF",
+    "primaryColorPressed": "#F5CD63FF",
+    "primaryColorSuppl": "rgba(215, 178, 78, 1)"
+  }
+}

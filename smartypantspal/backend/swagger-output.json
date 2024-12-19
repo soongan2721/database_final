@@ -1,0 +1,705 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "SmartyPantsPal API",
+    "description": "Description",
+    "version": "1.0.0"
+  },
+  "host": "127.0.0.1:3001",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "login",
+      "description": "登入相關的api"
+    },
+    {
+      "name": "question",
+      "description": "取得題目以及答案相關的api"
+    },
+    {
+      "name": "student",
+      "description": "跟學生有關的api"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/api/get_question": {
+      "get": {
+        "tags": ["question"],
+        "description": "去資料庫抓取題目，會根據class_range及type_option去看要抓練習還是測驗",
+        "parameters": [
+          {
+            "name": "class_range",
+            "in": "query",
+            "description": "第幾周練習(如果是測驗就不用傳這個參數)",
+            "type": "string",
+            "example": "第一周"
+          },
+          {
+            "name": "class_option",
+            "in": "query",
+            "description": "課程名稱",
+            "type": "string",
+            "example": "CV",
+            "required": true
+          },
+          {
+            "name": "type_option",
+            "in": "query",
+            "description": "第幾周測驗(如果是練習就不用傳這個參數)",
+            "type": "string",
+            "example": "session1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功取得題目，所回傳的資訊",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "question_id": 1,
+                    "question_type": "選擇題",
+                    "degree": "容易",
+                    "content": "下列哪一個符合梯度下降的意義,A.使所有圖像都有相同的解析度,B.幫助模型的訓練收斂得更快,C.使模型可以只處理黑白圖像,D.使所有圖像都有相同的尺寸",
+                    "start_time": "2024-01-08T16:00:00.000Z",
+                    "end_time": "2024-08-30T06:25:00.000Z"
+                  }
+                ]
+              }
+            }
+          },
+          "404": {
+            "description": "找不到題目"
+          },
+          "500": {
+            "description": "回傳error值"
+          }
+        }
+      }
+    },
+    "/api/get_answer": {
+      "get": {
+        "tags": ["question"],
+        "description": "去資料庫抓答案，會根據class_range及type_option去看要抓練習還是測驗",
+        "parameters": [
+          {
+            "name": "class_option",
+            "in": "query",
+            "description": "課程名稱",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "range_array",
+            "in": "query",
+            "description": "第幾周練習(如果是測驗就不用傳這個參數)",
+            "type": "string",
+            "example": "第一周"
+          },
+          {
+            "name": "class_range",
+            "in": "query",
+            "description": "第幾周測驗(如果是練習就不用傳這個參數)",
+            "type": "string",
+            "example": "session1"
+          },
+          {
+            "name": "questionId",
+            "in": "query",
+            "description": "要查詢哪一題的答案(如果是測驗就不用傳這個參數)",
+            "type": "integer",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功取得答案，所回傳的資訊",
+            "content": {
+              "application/json": {
+                "example": {
+                  "question_id": 1,
+                  "question_type": "選擇題",
+                  "degree": "容易",
+                  "content": "下列哪一個符合梯度下降的意義,A.使所有圖像都有相同的解析度,B.幫助模型的訓練收斂得更快,C.使模型可以只處理黑白圖像,D.使所有圖像都有相同的尺寸",
+                  "anwser": "B",
+                  "explain": "因為愛"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "回傳error值"
+          }
+        }
+      }
+    },
+    "/api//upload_practice_table": {
+      "post": {
+        "tags": ["question"],
+        "description": "把學生練習的作答紀錄存進資料庫",
+        "parameters": [
+          {
+            "name": "class_option",
+            "in": "body",
+            "description": "課程名稱",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "studentId",
+            "in": "body",
+            "description": "使用者名稱",
+            "required": true
+          },
+          {
+            "name": "question_id",
+            "in": "body",
+            "description": "題目id",
+            "required": true
+          },
+          {
+            "name": "student_answer",
+            "in": "body",
+            "description": "學生作答的答案",
+            "required": true
+          },
+          {
+            "name": "answer_time",
+            "in": "body",
+            "description": "每題練習所花的時間",
+            "required": true
+          },
+          {
+            "name": "answer_date",
+            "in": "body",
+            "description": "做該次練習的日期",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功取得答案，所回傳的資訊",
+            "content": {
+              "application/json": {
+                "example": {
+                  "affectedRows":1,
+                  "insertId":247,
+                  "warningStatus":0
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "回傳error值"
+          }
+        }
+      }
+    },
+    "/api/upload_gpt_response_table": {
+      "post": {
+        "tags": ["question"],
+        "description": "把簡答題的題目和學生的答案存進資料庫",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "簡答題的題目和學生的答案",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功"
+          },
+          "500": {
+            "description": "回傳error值"
+          }
+        }
+      }
+    },
+    "/api/get_gpt_judge": {
+      "get": {
+        "tags": ["question"],
+        "description": "用來抓取簡答題的答案，目前只有測驗會有簡答題",
+        "parameters": [
+          {
+            "name": "degree",
+            "in": "query",
+            "description": "題目難易度",
+            "type": "string"
+          },
+          {
+            "name": "class_option",
+            "in": "query",
+            "description": "課程名稱",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "type_option",
+            "in": "query",
+            "description": "題目章節",
+            "type": "string",
+            "example": "session1"
+          },
+          {
+            "name": "student",
+            "in": "query",
+            "description": "學生的帳號",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功抓取到簡答題答案",
+            "content": {
+              "application/json": {
+                "example": {
+                  "gpt_response_id": 260,
+                  "class": "CV",
+                  "session_range": "session1",
+                  "student": "7113056119",
+                  "short_question": "模型在訓練數據上表現很好，但在測試數據上表現差，這是___引起的,___在訓練數據上表現很好，但在測試數據上表現差，這是過擬合引起的",
+                  "short_anwser_question": "555,555",
+                  "anwser_explain": null,
+                  "gpt_response": null
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "回傳error值"
+          }
+        }
+      }
+    },
+    "/api/upload_student_table": {
+      "post": {
+        "tags": ["student"],
+        "description": "把學生的答案以及答題記錄和其他相關資訊存進資料庫",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "學生的答案和答題記錄",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "class": {
+                  "description": "課程名稱",
+                  "type": "string",
+                  "required": true
+                },
+                "session": {
+                  "description": "",
+                  "type": "string",
+                  "required": true
+                },
+                "degree": {
+                  "description": "題目難易度",
+                  "type": "string"
+                },
+                "student": {
+                  "description": "學生的帳號",
+                  "type": "string",
+                  "required": true
+                },
+                "student_answer": {
+                  "description": "學生的答案",
+                  "type": "string",
+                  "required": true
+                },
+                "question_id": {
+                  "description": "題目的代號",
+                  "type": "string",
+                  "required": true
+                },
+                "score": {
+                  "description": "選擇題分數",
+                  "type": "integer",
+                  "required": true
+                },
+                "total_score": {
+                  "description": "選擇題加簡答題的分數總合",
+                  "type": "integer",
+                  "required": true
+                },
+                "date": {
+                  "description": "作答的日期",
+                  "type": "string",
+                  "required": true
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功把答題記錄存進資料庫所回傳的資訊",
+            "content": {
+              "application/json": {
+                "example": {
+                  "affectedRows": 1,
+                  "insertId": 215,
+                  "warningStatus": 0
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "回傳error值"
+          }
+        }
+      }
+    },
+    "/api/check_student_table": {
+      "get": {
+        "tags": ["student"],
+        "description": "在測驗的系統中，去檢查是否有作答過，如果有就回傳作答資訊的物件，否則回傳空值",
+        "parameters": [
+          {
+            "name": "degree",
+            "in": "query",
+            "description": "題目難易度",
+            "type": "string"
+          },
+          {
+            "name": "student",
+            "in": "query",
+            "description": "學生的帳號",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "class",
+            "in": "query",
+            "description": "課程名稱",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "type_option",
+            "in": "query",
+            "description": "題目章節",
+            "type": "string",
+            "example": "session1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "有作答過會回傳的資訊",
+            "content": {
+              "application/json": {
+                "example": {
+                  "anwser_id": 215,
+                  "class": "CV",
+                  "session_range": "session2",
+                  "degree": "0",
+                  "student": "7113056119",
+                  "student_anwser": "To reduce dimensionality",
+                  "score": 0,
+                  "question_id_csv": "7",
+                  "anwser_date": "2024-08-03T14:40:18.000Z",
+                  "total_score": 0
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "回傳error值"
+          }
+        }
+      }
+    },
+    "/api/catch_student_table": {
+      "get": {
+        "tags": ["student"],
+        "description": "取得學生所有答題記錄，如果沒作答過回傳空值",
+        "parameters": [
+          {
+            "name": "student",
+            "in": "query",
+            "description": "學生的帳號",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "回傳所有作答過的資訊",
+            "content": {
+              "application/json": {
+                "example": {
+                  "anwser_id": 215,
+                  "class": "CV",
+                  "session_range": "session2",
+                  "degree": "0",
+                  "student": "7113056119",
+                  "student_anwser": "To reduce dimensionality",
+                  "score": 0,
+                  "question_id_csv": "7",
+                  "anwser_date": "2024-08-03T14:40:18.000Z",
+                  "total_score": 0
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "回傳error值"
+          }
+        }
+      }
+    },
+    "/api/sql": {
+      "get": {
+        "tags": ["database"],
+        "description": "資料庫連線",
+        "responses": {
+          "200": {
+            "description": "連線成功",
+            "content": {
+              "text/plain": {
+                "example": "連線成功"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/loginn": {
+      "post": {
+        "tags": ["login"],
+        "description": "使用者登入系統",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "body",
+            "description": "使用者帳號",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "password",
+            "in": "body",
+            "description": "使用者密碼",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "登入成功",
+            "content": {
+              "application/json": {
+                "example": [
+                  "成功",
+                  "9999999999",
+                  {
+                    "cookie": {
+                      "originalMaxAge": 12000000,
+                      "expires": "2024-08-04T19:26:47.647Z",
+                      "httpOnly": false,
+                      "path": "/",
+                      "sameSite": "lax"
+                    },
+                    "loggedin": true,
+                    "username": "9999999999",
+                    "authInfo": {
+                      "name": "9999999999",
+                      "isboss": false
+                    }
+                  },
+                  "ym4ubHBKmwOxNv6V4uHxWDVE145plusE"
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "帳號密碼錯誤",
+            "content": {
+              "text/plain": {
+                "example": "帳號密碼輸入錯誤!"
+              }
+            }
+          },
+          "400": {
+            "description": "未輸入帳號密碼",
+            "content": {
+              "text/plain": {
+                "example": "請輸入您的帳號密碼!"
+              }
+            }
+          },
+          "500": {
+            "description": "回傳error值",
+            "content": {
+              "text/plain": {
+                "example": "回傳error值"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/check_username": {
+      "post": {
+        "tags": ["login"],
+        "description": "檢查要註冊的帳號是否有被使用",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "body",
+            "description": "使用者帳號",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "帳號沒重複",
+            "content": {
+              "text/plain": {
+                "example": "沒重複!"
+              }
+            }
+          },
+          "409": {
+            "description": "帳號重複",
+            "content": {
+              "text/plain": {
+                "example": "使用者已存在"
+              }
+            }
+          },
+          "400": {
+            "description": "沒輸入帳號",
+            "content": {
+              "text/plain": {
+                "example": "請輸入使用者名稱!"
+              }
+            }
+          },
+          "500": {
+            "description": "回傳error值",
+            "content": {
+              "text/plain": {
+                "example": "回傳error值"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/signup": {
+      "post": {
+        "tags": ["login"],
+        "description": "註冊新帳號並寫進資料庫",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "body",
+            "description": "使用者帳號",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "password",
+            "in": "body",
+            "description": "使用者密碼",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "註冊成功",
+            "content": {
+              "text/plain": {
+                "example": "用戶新增成功"
+              }
+            }
+          },
+          "400": {
+            "description": "註冊失敗",
+            "content": {
+              "text/plain": {
+                "example": "請輸入完整資料!"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/login_check": {
+      "get": {
+        "tags": ["login"],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "檢查成功",
+            "content": {
+              "application/json": {
+                "example": [
+                  "ym4ubHBKmwOxNv6V4uHxWDVE145plusE",
+                  "ym4ubHBKmwOxNv6V4uHxWDVE145plusE",
+                  "9999999999",
+                  "使用者",
+                  true
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "檢查失敗",
+            "content": {
+              "text/plain": {
+                "example": "error"
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "data": "Server error"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/logout": {
+      "post": {
+        "tags": ["login"],
+        "description": "使用者登出，並消除該使用者的cookie和session",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "text/plain": {
+                "example": "登出成功"
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "text/plain": {
+                "example": "数据库连接失败"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {}
+}

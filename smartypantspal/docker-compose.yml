@@ -1,0 +1,43 @@
+services:
+  frontend:
+    container_name: vue-nginx-frontend
+    depends_on:
+      backend:
+        condition: service_started
+        required: true
+    image: aids902/smartypantspal-frontend:v1.3.3
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    networks:
+      webnet:
+        ipv4_address: 172.18.0.4
+    ports:
+      - mode: ingress
+        target: 80
+        published: "80"
+        protocol: tcp                    
+
+  backend:
+    container_name: nodemon-backend
+    extra_hosts:
+      - host.docker.internal=host-gateway
+    image: aids902/smartypantspal-backend:v1.3.3
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    networks:
+      webnet:
+        ipv4_address: 172.18.0.2
+    ports:
+      - mode: ingress
+        target: 8888
+        published: "8888"
+        protocol: tcp
+networks:
+  webnet:
+    name: smartypantspal_webnet
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16

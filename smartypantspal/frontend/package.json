@@ -1,0 +1,40 @@
+{
+  "name": "smartpantspal",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "format": "prettier --write \"src/**/*.{js,vue,css,scss,html}\""
+  },
+  "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "axios": "^1.6.7",
+    "bootstrap": "^5.3.3",
+    "bootstrap-vue": "^2.23.1",
+    "marked": "^15.0.4",
+    "vue": "^3.4.15",
+    "vue-cookies": "^1.8.3",
+    "vue-html2canvas": "^0.0.4",
+    "vue-loading-overlay": "^6.0.4",
+    "vue-router": "^4.2.5",
+    "vuex": "^4.0.2",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@vicons/ionicons5": "^0.12.0",
+    "@vitejs/plugin-vue": "^5.0.3",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^9.9.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-vue": "^9.27.0",
+    "naive-ui": "^2.37.3",
+    "prettier": "^3.3.3",
+    "unplugin-auto-import": "^0.17.5",
+    "vfonts": "^0.0.3",
+    "vite": "^5.0.11",
+    "marked": "^5.0.0"
+  }
+}

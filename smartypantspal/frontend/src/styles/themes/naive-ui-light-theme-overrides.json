@@ -1,0 +1,10 @@
+{
+  "common": {
+    "popoverColor": "#F4FCF9FF",
+    "tableColor": "#F4FCF9FF",
+    "cardColor": "#F4FCF9FF",
+    "bodyColor": "#F4FCF9FF",
+    "modalColor": "#F4FCF9FF",
+    "tableHeaderColor": "rgba(222, 241, 232, 1)"
+  }
+}

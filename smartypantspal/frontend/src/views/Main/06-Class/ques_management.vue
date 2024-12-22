@@ -25,33 +25,6 @@
                         />
                     </n-form-item>
 
-                    <n-form-item label="測驗類型" path="exam_type">
-                        <n-select
-                            :options="examType_options"
-                            v-model:value="quesForm_value.exam_type"
-                            class="selectStyle"
-                            placeholder="請選擇測驗類型"
-                        />
-                    </n-form-item>
-
-                    <n-form-item label="難易度" path="degree">
-                        <n-select
-                            :options="degree_options"
-                            v-model:value="quesForm_value.degree"
-                            class="selectStyle"
-                            placeholder="請選擇難易度"
-                        />
-                    </n-form-item>
-
-                    <n-form-item label="概念" path="concept_name">
-                        <n-select
-                            multiple :options="concept_options"
-                            v-model:value="quesForm_value.concept_ids"
-                            class="selectStyle"
-                            placeholder="請選擇概念"
-                        />
-                    </n-form-item>
-
                     <n-form-item label="題目內容" path="content">
                         <n-input
                             v-model:value="quesForm_value.content"
@@ -70,12 +43,8 @@
                                 placeholder="請輸入選項內容"
                                 :autosize="{minRows: 1}"
                                 :disabled="quesForm_option1_input_isDisable"
-                                style="width: calc(100% - 120px); margin-right: 5px;"
+                                style="width: calc(100% - 100px); margin-right: 5px;"
                             />
-
-                            <n-button type="primary" size="medium" :disabled="quesForm_option1_button_isDisable" @click="button_optionRegenerate('A')">
-                                生成
-                            </n-button>
                         </n-input-group>
                         
                     </n-form-item>
@@ -88,11 +57,8 @@
                                 placeholder="請輸入選項內容"
                                 :autosize="{minRows: 1}"
                                 :disabled="quesForm_option2_input_isDisable"
-                                style="width: calc(100% - 120px); margin-right: 5px;"
+                                style="width: calc(100% - 100px); margin-right: 5px;"
                             />
-                            <n-button type="primary" size="medium" :disabled="quesForm_option2_button_isDisable" @click="button_optionRegenerate('B')">
-                                生成
-                            </n-button>
                         </n-input-group>
                     </n-form-item>
 
@@ -104,11 +70,8 @@
                                 placeholder="請輸入選項內容"
                                 :autosize="{minRows: 1}"
                                 :disabled="quesForm_option3_input_isDisable"
-                                style="width: calc(100% - 120px); margin-right: 5px;"
+                                style="width: calc(100% - 100px); margin-right: 5px;"
                             />
-                            <n-button type="primary" size="medium" :disabled="quesForm_option3_button_isDisable" @click="button_optionRegenerate('C')">
-                                生成
-                            </n-button>
                         </n-input-group>
                         
                     </n-form-item>
@@ -120,11 +83,8 @@
                                 type="textarea"
                                 placeholder="請輸入選項內容"
                                 :autosize="{minRows: 1}"
-                                style="width: calc(100% - 120px); margin-right: 5px;"
+                                style="width: calc(100% - 100px); margin-right: 5px;"
                             />
-                            <n-button type="primary" size="medium" :disabled="quesForm_option4_button_isDisable" @click="button_optionRegenerate('D')">
-                                生成
-                            </n-button>
                         </n-input-group>
                         
                     </n-form-item>
@@ -228,20 +188,7 @@
             </n-button-group>
 
 
-            <n-switch
-                size="large"
-                style="margin: 5px; margin-left: 10px; height: auto;"
-                v-model:value="isVerified"
-                @update:value="isVerified_handleChange"
-                v-if="buttonIsVerify_show"
-            >
-                <template #checked>
-                    已驗證
-                </template>
-                <template #unchecked>
-                    未驗證
-                </template>
-            </n-switch>
+
         </div>
 
         
@@ -329,35 +276,6 @@
     function create_choiceQuesTable_columns( {modify, remove, invalidate, verify} ) {
         return [
             { type: 'selection'},
-            // { title: "題目ID", key: "question_id", align: "center"},
-            // { title: "測驗類型", key: "exam_type", align: "center"},
-            {
-                title: "概念",
-                key: "concept_names",
-                align: "center",
-
-                render(row) {
-                    const concept_names = row.concept_names.map(
-                        concept => {
-                            return h(
-                                NTag,
-                                {
-                                    style: { marginRight: "6px" },
-                                    type: "info",
-                                    bordered: false
-                                },
-                                {
-                                    default: () => concept
-                                }
-                            );
-                        }
-                    );
-                    return concept_names;
-                }
-
-
-            },
-            { title: "難易度", key: "degree", align: "center", width: 70},
             {
                 title: "內容", key: "content", align: "center",
                 render(row) {
@@ -431,48 +349,6 @@
                         ]
                     );
                 }
-            },
-            {
-                title: "驗證",
-                key: "actions",
-                align: "center",
-                width: 90,
-                render(row) {
-
-                    if(isVerified.value == true) {
-                        return h(
-                            'div', [
-                                h(
-                                    NButton, {
-                                        type: "error",
-                                        style: { margin: '5px' },
-                                        tertiary: false,
-                                        disabled: invalidateButton_isDisable.value,
-                                        onClick: () => invalidate(row)
-                                    },
-                                    { default: () => "取消" }
-                                )
-                            ]
-                        );
-                    }
-                    else {
-                        return h(
-                            'div', [
-                                h(
-                                    NButton, {
-                                        type: "primary",
-                                        style: { margin: '5px' },
-                                        tertiary: false,
-                                        disabled: verifyButton_isDisable.value,
-                                        onClick: () => verify(row)
-                                    },
-                                    { default: () => "確認" }
-                                )
-                            ]
-                        );
-                    }
-
-                }
             }
         ]
     }
@@ -484,34 +360,6 @@
             { type: 'selection', align: "center"},
             // { title: "題目ID", key: "question_id", align: "center"},
             // { title: "測驗類型", key: "exam_type", align: "center"},
-            
-            {
-                title: "概念",
-                key: "concept_names",
-                align: "center",
-
-                render(row) {
-                    const concept_names = row.concept_names.map(
-                        concept => {
-                            return h(
-                                NTag,
-                                {
-                                    style: { marginRight: "6px" },
-                                    type: "info",
-                                    bordered: false
-                                },
-                                {
-                                    default: () => concept
-                                }
-                            );
-                        }
-                    );
-                    return concept_names;
-                }
-
-            },
-
-            { title: "難易度", key: "degree", align: "center"},
             {
                 title: "內容", key: "content", align: "center",
                 render(row) {
@@ -551,48 +399,6 @@
                     );
                 }
             },
-            {
-                title: "驗證",
-                key: "actions",
-                align: "center",
-                width: 90,
-                render(row) {
-
-                    if(isVerified.value == true) {
-                        return h(
-                            'div', [
-                                h(
-                                    NButton, {
-                                        type: "error",
-                                        style: { margin: '5px' },
-                                        tertiary: false,
-                                        disabled: invalidateButton_isDisable.value,
-                                        onClick: () => invalidate(row)
-                                    },
-                                    { default: () => "取消" }
-                                )
-                            ]
-                        );
-                    }
-                    else {
-                        return h(
-                            'div', [
-                                h(
-                                    NButton, {
-                                        type: "primary",
-                                        style: { margin: '5px' },
-                                        tertiary: false,
-                                        disabled: verifyButton_isDisable.value,
-                                        onClick: () => verify(row)
-                                    },
-                                    { default: () => "確認" }
-                                )
-                            ]
-                        );
-                    }
-
-                }
-            }
         ]
     }
 

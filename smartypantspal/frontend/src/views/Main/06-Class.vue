@@ -2,7 +2,7 @@
     <div class="Main" style="height: 93vh;" :style="{ fontSize: fontSize + 'px' }">
         <n-tabs type="line" class="tab_style">
 
-            <n-tab-pane name="registry_management" tab="註冊表管理" class="tabPane_style">
+            <!-- <n-tab-pane name="registry_management" tab="註冊表管理" class="tabPane_style">
                 <registry_management />
             </n-tab-pane>
 
@@ -12,10 +12,14 @@
 
             <n-tab-pane name="concept_management" tab="概念管理" class="tabPane_style">
                 <concept_management />
-            </n-tab-pane>
+            </n-tab-pane> -->
 
             <n-tab-pane name="ques_management" tab="題目管理" class="tabPane_style">
                 <ques_management />
+            </n-tab-pane>
+
+            <n-tab-pane name="courseYearQues" tab="課程年份管理" class="tabPane_style">
+                <courseYearQues />
             </n-tab-pane>
 
             <!-- <n-tab-pane name="test_management" tab="測驗管理" class="tabPane_style ">
@@ -26,9 +30,11 @@
                 <materials_upload />
             </n-tab-pane> -->
 
-            <n-tab-pane name="records" tab="使用紀錄" class="tabPane_style">
+            <!-- <n-tab-pane name="records" tab="使用紀錄" class="tabPane_style">
                 <records />
-            </n-tab-pane>
+            </n-tab-pane> -->
+
+
 
         </n-tabs>
 
@@ -45,6 +51,7 @@
     import test_management from './06-Class/test_management.vue'
     import concept_management from './06-Class/concept_management.vue'
     import registry_management from './06-Class/registry_management.vue'
+    import courseYearQues from './06-Class/courseYearQues.vue'
     import { useMessage } from 'naive-ui';
 
     const router = useRouter();

@@ -286,6 +286,9 @@ CREATE TABLE inquiry_response
 -- -- 
 
 
+
+
+
 -- 小幫手 --
 CREATE TABLE IF NOT EXISTS `helper_conversation_record` (
   `conversation_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -297,6 +300,65 @@ CREATE TABLE IF NOT EXISTS `helper_conversation_record` (
   PRIMARY KEY (`conversation_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 -- --
+
+-- 資料庫期末資料表 --
+
+CREATE TABLE DB_teacher_lib
+(
+  teacher_id INT NOT NULL AUTO_INCREMENT,
+  teacher_name text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ,
+
+  PRIMARY KEY (teacher_id)
+);
+
+CREATE TABLE DB_course_lib
+(
+  course_id INT NOT NULL AUTO_INCREMENT,
+  course_name text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ,
+  teacher_id INT NOT NULL,
+
+  PRIMARY KEY (course_id),
+  FOREIGN KEY (teacher_id) REFERENCES DB_teacher_lib(teacher_id) ON DELETE CASCADE
+);
+
+CREATE TABLE DB_question_lib
+(
+  question_id INT NOT NULL AUTO_INCREMENT,
+  content text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ,
+  question_type text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  answer text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+
+  PRIMARY KEY (question_id)
+);
+
+CREATE TABLE DB_choiceQues_detail
+(
+	detail_id INT NOT NULL AUTO_INCREMENT,
+	option1 text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ,
+	option2 text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ,
+	option3 text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ,
+	option4 text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ,
+	answer_explain text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ,
+	question_id INT NOT NULL,
+
+	PRIMARY KEY (detail_id),
+	FOREIGN KEY (question_id) REFERENCES DB_question_lib(question_id) ON DELETE CASCADE
+);
+
+CREATE TABLE DB_courseYearQues
+(
+  courseYearQues_id INT NOT NULL AUTO_INCREMENT,
+  examYear INT NOT NULL,
+  question_id INT NOT NULL,
+  course_id INT NOT NULL,
+
+  PRIMARY KEY (courseYearQues_id),
+  FOREIGN KEY (question_id) REFERENCES DB_question_lib(question_id) ON DELETE CASCADE,
+  FOREIGN KEY (course_id) REFERENCES DB_course_lib(course_id) ON DELETE CASCADE
+);
+
+-- 資料庫期末資料表 --
+
 
 
 

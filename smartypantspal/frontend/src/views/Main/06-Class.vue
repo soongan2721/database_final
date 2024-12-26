@@ -4,13 +4,13 @@
 
             <!-- <n-tab-pane name="registry_management" tab="註冊表管理" class="tabPane_style">
                 <registry_management />
-            </n-tab-pane>
+            </n-tab-pane> -->
 
             <n-tab-pane name="student_management" tab="學生管理" class="tabPane_style">
                 <student_management />
             </n-tab-pane>
 
-            <n-tab-pane name="concept_management" tab="概念管理" class="tabPane_style">
+            <!-- <n-tab-pane name="concept_management" tab="概念管理" class="tabPane_style">
                 <concept_management />
             </n-tab-pane> -->
 

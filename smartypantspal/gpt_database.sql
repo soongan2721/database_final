@@ -572,3 +572,13 @@ REPLACE INTO `question_concept` (`question_concept_id`, `question_id`, `concept_
 
 
 -- 建立資料(後臺系統) END --
+
+
+
+
+
+-- 建立資料(資料庫期末) --
+
+
+
+-- 建立資料(資料庫期末) END --

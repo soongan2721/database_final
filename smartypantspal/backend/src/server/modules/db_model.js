@@ -18,95 +18,80 @@ const pool = mariadb.createPool(
 
 
 // 獲取所有選擇題
-const getAllChoiceQues = () => {
-    return new Promise(
-        (resolve, reject) => {
-            pool.getConnection(
-                (connError, conn) => {
-                    if(connError) {
-                        reject(connError);
+const getChoiceQuesByCourseName = (courseName) => {
+    return new Promise((resolve, reject) => {
+        pool.getConnection((connError, conn) => {
+            if (connError) {
+                reject(connError);
+            } else {
+                console.log(`m:${courseName}`)
+                let mysqlbody = `
+                    SELECT
+                        q.question_id,
+                        q.content,
+                        q.answer,
+                        cqd.option1,
+                        cqd.option2,
+                        cqd.option3,
+                        cqd.option4,
+                        cqd.answer_explain
+                    FROM
+                        db_course_lib AS cr
+                    JOIN
+                        db_courseyearques AS cyq ON cr.course_id = cyq.course_id
+                    JOIN
+                        db_question_lib AS q ON cyq.question_id = q.question_id
+                    JOIN
+                        db_choiceques_detail AS cqd ON q.question_id = cqd.question_id
+                    WHERE
+                        cr.course_name = ?;
+                `;
+                conn.query(mysqlbody, [courseName], (error, result) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(result);
                     }
-                    else {
-                        let mysqlbody = `
-                            SELECT
-                                db_question_lib.question_id,
-                                db_question_lib.content,
-                                db_question_lib.answer,
-                                db_choiceques_detail.option1,
-                                db_choiceques_detail.option2,
-                                db_choiceques_detail.option3,
-                                db_choiceques_detail.option4,
-                                db_choiceques_detail.answer_explain
-                            FROM
-                                db_question_lib
-                            JOIN
-                                db_choiceques_detail
-                            ON
-                                db_question_lib.question_id = db_choiceques_detail.question_id;
-                        `
-                        conn.query (
-                            mysqlbody,
-                            (error, result) => {
-                                if(error) {
-                                    console.log('幹SQL錯誤!!!!!!!!!!!', error);
-                                    reject(error);
-                                }
-                                else {
-                                    resolve(result);
-                                }
-                                conn.release();
-                            }
-                        )
+                    conn.release();
+                });
+            }
+        });
+    });
+};
+
+
+const getShortAnsQuesByCourseName = (courseName) => {
+    return new Promise((resolve, reject) => {
+        pool.getConnection((connError, conn) => {
+            if (connError) {
+                reject(connError);
+            } else {
+                let mysqlbody = `
+                    SELECT
+                        q.question_id,
+                        q.content,
+                        q.answer
+                    FROM
+                        db_course_lib AS cr
+                    JOIN
+                        db_courseyearques AS cyq ON cr.course_id = cyq.course_id
+                    JOIN
+                        db_question_lib AS q ON cyq.question_id = q.question_id
+                    WHERE
+                        cr.course_name = ? AND q.question_type = '簡答題';
+                `;
+                conn.query(mysqlbody, [courseName], (error, result) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(result);
                     }
-                }
-            )
-        }
-    )
-}
+                    conn.release();
+                });
+            }
+        });
+    });
+};
 
-const getAllShortAnsQues = () => {
-    return new Promise(
-        (resolve, reject) => {
-            pool.getConnection(
-                (connError, conn) => {
-                    if(connError) {
-                        reject(connError);
-                    }
-                    else {
-                        let mysqlbody = `
-                            SELECT
-                                question_id,
-                                content,
-                                answer
-                            FROM
-                                db_question_lib
-                            WHERE
-                                question_type = '簡答題';
-                        `
-                        conn.query (
-                            mysqlbody,
-                            (error, result) => {
-                                if(error) {
-                                    console.log('幹SQL錯誤!!!!!!!!!!!', error);
-                                    reject(error);
-                                }
-                                else {
-                                    resolve(result);
-                                }
-                                conn.release();
-                            }
-                        )
-                    }
-                }
-            )
-        }
-    )
-}
-
-
-
-
-
-
-module.exports.getAllChoiceQues = getAllChoiceQues; // 獲取所有選擇題
-module.exports.getAllShortAnsQues = getAllShortAnsQues; // 獲取所有簡答題
+module.exports.getChoiceQuesByCourseName = getChoiceQuesByCourseName; // 獲取所有選擇題
+module.exports.getShortAnsQuesByCourseName = getShortAnsQuesByCourseName; // 獲取所有簡答題

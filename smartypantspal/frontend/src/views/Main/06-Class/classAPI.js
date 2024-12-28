@@ -4,9 +4,8 @@ import { useMessage } from "naive-ui";
 
 const message = useMessage();
 
-
 export const option_regenerate = async (question, option) => {
-
+    
     try {
         
         const response = await axios.post(
@@ -32,4 +31,5 @@ export const option_regenerate = async (question, option) => {
         console.log('錯誤！重新生成失敗');
         return [];
     }
+
 }

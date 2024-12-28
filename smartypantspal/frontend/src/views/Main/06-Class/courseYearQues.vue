@@ -209,7 +209,7 @@
                             )
                         );    
                         
-                    console.log(class_options.value);
+                    // console.log(class_options.value);
                     
 
                 }

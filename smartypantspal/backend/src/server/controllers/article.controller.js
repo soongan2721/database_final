@@ -2,10 +2,9 @@ var articleModule = require('../modules/article.module');
 // const { exec } = require('child_process'); // product version
 const { spawn } = require('child_process'); // dev version
 
-
 //在給定的範圍內隨機挑選
 function getRandom(question_id, freq){
-  let randomQuestionArray = [];    //儲存被挑選到的question_id      
+  let randomQuestionArray = [];    //儲存被挑選到的question_id
   let maxLength = 5;          //預設值
 
   //把太常出現的題目刪掉
@@ -996,6 +995,7 @@ const articlOptionRegenerate = (req, res) => {
   
   
 }
+
 
 module.exports.articlGetQuestion = articlGetQuestion;
 module.exports.articleupload_student_table = articleupload_student_table;

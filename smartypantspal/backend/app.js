@@ -7,7 +7,10 @@ var logger = require('morgan');
 const cors = require('cors');
 var indexRouter = require('./src/server/routes/index'); //引入 routes下的index.js 並宣告為變數 indexRouter
 var usersRouter = require('./src/server/routes/users');
+
 var api = require('./src/server/routes/article.route');
+var db_api = require('./src/server/routes/db_route');
+
 const session = require('express-session');
 const swaggerUi = require("swagger-ui-express");
 const swaggerDoc = require('./swagger-output.json');
@@ -152,7 +155,10 @@ app.use('/datatablebs4', express.static(path.join(__dirname, 'node_modules/datat
 //路徑
 app.use('/', indexRouter); //將上面引入檔案路由設定
 app.use('/users', usersRouter);
+
 app.use('/api', api);
+app.use('/db_api', db_api);
+
 // app.use('/img', imgupload);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

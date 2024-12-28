@@ -87,4 +87,8 @@ router.post('/get_gpt_response', articleCtrl.articlGetGptResponse);
 // 辰翰 11/18 根據現有題目及選項內容重新生成選項
 router.post('/option_regenerate', articleCtrl.articlOptionRegenerate);
 
+
+
+
+
 module.exports = router;

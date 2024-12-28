@@ -579,6 +579,30 @@ REPLACE INTO `question_concept` (`question_concept_id`, `question_id`, `concept_
 
 -- 建立資料(資料庫期末) --
 
-
+REPLACE INTO `db_question_lib` (`question_id`, `content`, `question_type`, `answer`) VALUES
+	(1, '下列哪一個符合梯度下降的意義?', '選擇題', 'B'),
+	(2, '下列哪一個符合卷積的意義?', '選擇題', 'A'),
+	(3, '下列哪一個符合池化的意義?', '選擇題', 'C'),
+	(4, '在電腦視覺中為甚麼做資料正規化?', '選擇題', 'B'),
+	(5, '簡答題測試?', '簡答題', '簡答題答案');
+INSERT INTO `db_choiceques_detail` (`detail_id`, `option1`, `option2`, `option3`, `option4`, `answer_explain`, `question_id`) VALUES
+	(1, '1', '2', '3', '4', '解釋1', 1),
+	(2, '提取特徵', '減少參數量', '幫助模型收斂', '固定學習率', '解釋2', 2),
+	(3, '1', '2', '3', '4', '解釋3', 3),
+	(4, '使所有圖像都有相同的解析度', '幫助模型的訓練收斂得更快', '使模型可以只處理黑白圖像', '使所有圖像都有相同的尺寸', '解釋4', 4);
+REPLACE INTO `db_teacher_lib` (`teacher_id`, `teacher_name`) VALUES
+	(1, '老師1'),
+	(2, '老師2'),
+	(3, '老師3');
+REPLACE INTO `db_course_lib` (`course_id`, `course_name`, `teacher_id`) VALUES
+	(1, '電腦視覺', 1),
+	(2, '資料庫系統', 2),
+	(3, '資料模式與資料處理', 3);
+REPLACE INTO `db_courseYearQues` (`courseYearQues_id`, `examYear`, `question_id`, `course_id`) VALUES
+	(1, 113, 1, 1),
+	(2, 113, 2, 2),
+	(3, 112, 3, 1),
+	(4, 112, 4, 1),
+	(5, 112, 5, 2);
 
 -- 建立資料(資料庫期末) END --

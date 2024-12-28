@@ -270,6 +270,11 @@
     import * as XLSX from 'xlsx';
     import { NTag } from 'naive-ui';
 
+    import db_APIs from'@/config/db_ApiRoutes';
+    import { db_get_AllQuestion } from "./dbAPI";
+
+
+
     const message = useMessage();
     const dialog = useDialog();
 
@@ -537,8 +542,11 @@
     }
 
     onMounted( () => {
-        get_allQuestion()
+        // get_allQuestion()
         get_allConcept()
+        db_get_allQuestion()
+
+
     });
 
     const button_addQues = () => {
@@ -1652,7 +1660,8 @@
 
         setTimeout(
             async() => {
-                
+
+
                 const result = await option_regenerate(quesForm_value.value, option)
                 console.log(result);
 
@@ -1686,6 +1695,16 @@
 
 
 
+    }
+
+    async function db_get_allQuestion() {
+        const result = await db_get_AllQuestion()
+        console.log('result: ', result);
+        
+        choiceQuesTable_data.value = result.choiceQues
+        shortAnsQuesTable_data.value = result.shortAnsQues
+
+        
     }
 
 

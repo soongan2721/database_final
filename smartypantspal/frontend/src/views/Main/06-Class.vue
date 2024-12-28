@@ -6,9 +6,9 @@
                 <registry_management />
             </n-tab-pane> -->
 
-            <n-tab-pane name="student_management" tab="學生管理" class="tabPane_style">
+            <!-- <n-tab-pane name="student_management" tab="學生管理" class="tabPane_style">
                 <student_management />
-            </n-tab-pane>
+            </n-tab-pane> -->
 
             <!-- <n-tab-pane name="concept_management" tab="概念管理" class="tabPane_style">
                 <concept_management />
@@ -18,9 +18,9 @@
                 <ques_management />
             </n-tab-pane>
 
-            <n-tab-pane name="courseYearQues" tab="課程年份管理" class="tabPane_style">
+            <!-- <n-tab-pane name="courseYearQues" tab="課程年份管理" class="tabPane_style">
                 <courseYearQues />
-            </n-tab-pane>
+            </n-tab-pane> -->
 
             <!-- <n-tab-pane name="test_management" tab="測驗管理" class="tabPane_style ">
                 <test_management />

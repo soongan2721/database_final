@@ -139,6 +139,7 @@
                 align: "center",
 
                 render(row) {
+
                     const concepts = row.concepts.map(
                         concept => {
                             return h(
@@ -534,7 +535,6 @@
 
         // 顯示表單
         show_modifyWeekConceptForm.value = true;
-        // console.log(modifyWeekConceptForm_value.value);
 
     }
 

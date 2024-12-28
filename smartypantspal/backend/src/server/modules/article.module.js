@@ -1525,7 +1525,7 @@ const removeQuestion = (inputValues) => {
 
                     let mysqlbody = `
                       DELETE FROM
-                        question_lib
+                        db_question_lib
                       WHERE
                         question_id = ${question_id};`
 
@@ -2324,8 +2324,6 @@ const getAllClassStudent = (inputValues) => {
                   };
                 });
             
-                console.log(result_final);
-            
                 resolve(result_final);
                 conn.release();
 
@@ -2396,8 +2394,6 @@ const modifyClassStudent = (inputValues) => {
 
   const class_id = inputValues.class_id;
   const selected_student = inputValues.selected_student;
-
-  console.log(inputValues);
   
   return new Promise(
     (resolve, reject) => {

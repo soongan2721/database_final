@@ -2,8 +2,6 @@ import axios from 'axios';
 import { optionRegenerateAPI } from'@/config/ApiRoutes';
 import { useMessage } from "naive-ui";
 
-const message = useMessage();
-
 export const option_regenerate = async (question, option) => {
     
     try {

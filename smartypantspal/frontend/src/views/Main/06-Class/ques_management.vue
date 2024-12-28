@@ -271,7 +271,11 @@
     import { NTag } from 'naive-ui';
 
     import db_APIs from'@/config/db_ApiRoutes';
-    import { db_get_AllQuestion } from "./dbAPI";
+    import {
+        db_get_AllQuestion,
+        db_add_question,
+        db_modify_question,
+    } from "./dbAPI";
 
 
 
@@ -494,27 +498,27 @@
 
     };
 
-    const get_allQuestion = () => {
-        axios.get(GetAllQuestionAPI,
-            {
-                params: {
-                    isVerified: isVerified.value
-                },
-                withCredentials: true
-            }
-        )
-            .then(
-                response => {
-                    choiceQuesTable_data.value = response.data.choiceQues_array;
-                    shortAnsQuesTable_data.value = response.data.shortAnsQues_array;
-                }
-            )
-            .catch(
-                error => {
-                    message.error("錯誤!!!!!，題目獲取失敗");
-                }
-            );
-    }
+    // const get_allQuestion = () => {
+    //     axios.get(GetAllQuestionAPI,
+    //         {
+    //             params: {
+    //                 isVerified: isVerified.value
+    //             },
+    //             withCredentials: true
+    //         }
+    //     )
+    //         .then(
+    //             response => {
+    //                 choiceQuesTable_data.value = response.data.choiceQues_array;
+    //                 shortAnsQuesTable_data.value = response.data.shortAnsQues_array;
+    //             }
+    //         )
+    //         .catch(
+    //             error => {
+    //                 message.error("錯誤!!!!!，題目獲取失敗");
+    //             }
+    //         );
+    // }
 
     const get_allConcept = () => {
         axios.get(GetAllConceptAPI)
@@ -591,25 +595,19 @@
 
     const button_modifyQues = (row) => {
 
+        console.log('row: ', row);
+        console.log('quesForm_value.value: ', quesForm_value.value);
+        
+
         quesForm_eventType.value = '修改';
         show_quesForm.value = true;
         show_quesFormQuesType.value = false; // 修改時關閉題目類型選擇
         
         quesForm_value.value.question_id = row.question_id;
-        quesForm_value.value.degree = row.degree;
-        quesForm_value.value.exam_type = row.exam_type
         quesForm_value.value.content = row.content
         quesForm_value.value.answer = row.answer
         
-        row.concept_ids = row.concept_ids.map(id => parseInt(id, 10));
-        quesForm_value.value.concept_ids = row.concept_ids
-
-        // 當concept_ids裡只有一個值，且該值是 1 時，代表此題概念為default
-        if (quesForm_value.value.concept_ids.length == 1 && quesForm_value.value.concept_ids[0] == 1) {
-            quesForm_value.value.concept_ids = null;
-        }
-        
-        if(row.question_type == '選擇題') {
+        if(quesForm_value.value.question_type == '選擇題') {
 
             quesForm_value.value.explain = row.answer_explain
             quesForm_value.value.option1 = row.option1
@@ -677,11 +675,7 @@
     const quesForm_value = ref(
         {
             question_id: null,
-            concept_ids: null,
-            concept_names: null,
-            degree: null,
             question_type: '選擇題', // 表單預設類型為選擇題
-            exam_type: null,
             content: null,
             option1: null,
             option2: null,
@@ -770,82 +764,68 @@
     function button_submitQuesForm(event) {
         event.preventDefault();
         quesForm_ref.value.validate(
-            (error) => {
+            async (error) => {
                 if(error) {
                     message.error("錯誤! 請確認輸入正確的格式");
                 }
                 else {
                     if(quesForm_eventType.value == '新增') {
                         
-                        show_quesForm.value = false;
+                        try {
+                            show_quesForm.value = false;
+                            await db_add_question(quesForm_value.value);
+                            await db_get_allQuestion();
+                            message.success('題目新增成功')
+                        }
+                        catch(error) {
+                            message.error(error);
+                        }
                         
-                        axios.get(
-                            addQuestionAPI, {
-                                params: {
-                                    question_type: quesForm_value.value.question_type,
-                                    degree: quesForm_value.value.degree,
-                                    concept_ids: quesForm_value.value.concept_ids,
-                                    exam_type: quesForm_value.value.exam_type,
-                                    content: quesForm_value.value.content,
-                                    option1: quesForm_value.value.option1,
-                                    option2: quesForm_value.value.option2,
-                                    option3: quesForm_value.value.option3,
-                                    option4: quesForm_value.value.option4,
-                                    answer: quesForm_value.value.answer,
-                                    explain: quesForm_value.value.explain
-                                },
-                                withCredentials: true,
-                            }
-                        )
-                        .then(
-                            response => {
-                                get_allQuestion();   // 成功新增後重新獲取question_lib內容
-                                message.success("題目新增成功！")
-                            }
-                        )
-                        .catch(
-                            error => {
-                                message.error("錯誤！題目新增失敗");
-                            }
-                        )
 
                     }
                     else if(quesForm_eventType.value == '修改') {
 
                         show_quesForm.value = false;
 
-                        axios.get(
-                            modifyQuesAPI, {
-                                params: {
+                        try {
+                            show_quesForm.value = false;
+                            await db_modify_question(quesForm_value.value);
+                            await db_get_allQuestion();
+                            message.success('題目新增成功')
+                        }
+                        catch(error) {
+                            message.error(error);
+                        }
 
-                                    question_id: quesForm_value.value.question_id,
-                                    concept_ids: quesForm_value.value.concept_ids,
-                                    degree: quesForm_value.value.degree,
-                                    question_type: quesForm_value.value.question_type,
-                                    exam_type: quesForm_value.value.exam_type,
-                                    content: quesForm_value.value.content,
-                                    option1: quesForm_value.value.option1,
-                                    option2: quesForm_value.value.option2,
-                                    option3: quesForm_value.value.option3,
-                                    option4: quesForm_value.value.option4,
-                                    answer: quesForm_value.value.answer,
-                                    explain: quesForm_value.value.explain
+                        // axios.get(
+                        //     modifyQuesAPI, {
+                        //         params: {
+
+                        //             question_id: quesForm_value.value.question_id,
+                        //             question_type: quesForm_value.value.question_type,
+                        //             content: quesForm_value.value.content,
+                        //             option1: quesForm_value.value.option1,
+                        //             option2: quesForm_value.value.option2,
+                        //             option3: quesForm_value.value.option3,
+                        //             option4: quesForm_value.value.option4,
+                        //             answer: quesForm_value.value.answer,
+                        //             explain: quesForm_value.value.explain
                                     
-                                },
-                                withCredentials: true,
-                            }
-                        )
-                        .then(
-                            response => {
-                                get_allQuestion();   // 成功修改後重新獲取question_lib內容
-                                message.success("題目修改成功！")
-                            }
-                        )
-                        .catch(
-                            error => {
-                                message.error("錯誤!題目修改失敗");
-                            }
-                        )
+                        //         },
+                        //         withCredentials: true,
+                        //     }
+                        // )
+                        // .then(
+                        //     response => {
+                        //         get_allQuestion();   // 成功修改後重新獲取question_lib內容
+                        //         message.success("題目修改成功！")
+                        //     }
+                        // )
+                        // .catch(
+                        //     error => {
+                        //         message.error("錯誤!題目修改失敗");
+                        //     }
+                        // )
                         
                     }
                 }
@@ -960,7 +940,8 @@
             response => {
                 quesTable_value.value.selectedQues = [];
                 switch_normalOrBatch('normal');
-                get_allQuestion(); // 刪除成功後重新獲取題目
+                // get_allQuestion(); // 刪除成功後重新獲取題目
+                db_get_allQuestion();
                 message.success("題目刪除成功！")
             }
         )
@@ -1594,12 +1575,10 @@
     }
 
     function button_invalidateQues(row) {
-        // console.log('invalidate: ', row.question_id);
         modify_quesVerification(0, row.question_id);
     }
 
     function button_verifyQues(row) {
-        // console.log('verify: ', row.question_id);
         modify_quesVerification(1, row.question_id);
     }
 
@@ -1663,7 +1642,6 @@
 
 
                 const result = await option_regenerate(quesForm_value.value, option)
-                console.log(result);
 
                 if(option == 'A') {
                     quesForm_option1_input_isDisable.value = false;
@@ -1699,7 +1677,6 @@
 
     async function db_get_allQuestion() {
         const result = await db_get_AllQuestion()
-        console.log('result: ', result);
         
         choiceQuesTable_data.value = result.choiceQues
         shortAnsQuesTable_data.value = result.shortAnsQues

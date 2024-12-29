@@ -33,7 +33,9 @@ export const db_add_question = async(inputValues) => {
                     option3:inputValues.option3,
                     option4: inputValues.option4,
                     answer: inputValues.answer,
-                    explain: inputValues.explain
+                    explain: inputValues.explain,
+                    course: inputValues.course,
+                    examYear: inputValues.examYear
                 },
                 withCredentials: true
             }
@@ -61,7 +63,9 @@ export const db_modify_question = async(inputValues) => {
                     option3: inputValues.option3,
                     option4: inputValues.option4,
                     answer: inputValues.answer,
-                    explain: inputValues.explain
+                    explain: inputValues.explain,
+                    course: inputValues.course,
+                    examYear: inputValues.examYear
                 },
                 withCredentials: true
             }

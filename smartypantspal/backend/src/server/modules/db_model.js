@@ -29,20 +29,34 @@ const getAllChoiceQues = () => {
                     else {
                         let mysqlbody = `
                             SELECT
-                                db_question_lib.question_id,
-                                db_question_lib.content,
-                                db_question_lib.answer,
-                                db_choiceques_detail.option1,
-                                db_choiceques_detail.option2,
-                                db_choiceques_detail.option3,
-                                db_choiceques_detail.option4,
-                                db_choiceques_detail.answer_explain
+                                cr.course_name,
+                                t.teacher_name,
+                                q.question_id,
+                                q.content,
+                                q.answer,
+                                cqd.option1,
+                                cqd.option2,
+                                cqd.option3,
+                                cqd.option4,
+                                cqd.answer_explain,
+                                GROUP_CONCAT(DISTINCT cyq.examYear ORDER BY cyq.examYear DESC SEPARATOR ', ') AS years,
+                                COUNT(cyq.question_id) AS appearance_count
                             FROM
-                                db_question_lib
+                                db_course_lib AS cr
                             JOIN
-                                db_choiceques_detail
-                            ON
-                                db_question_lib.question_id = db_choiceques_detail.question_id;
+                                db_courseyearques AS cyq ON cr.course_id = cyq.course_id
+                            JOIN
+                                db_question_lib AS q ON cyq.question_id = q.question_id
+                            JOIN
+                                db_choiceques_detail AS cqd ON q.question_id = cqd.question_id
+                            JOIN
+                                db_teacher_lib AS t ON cr.teacher_id = t.teacher_id
+                            WHERE
+                                q.question_type = '選擇題'
+                            GROUP BY
+                                q.question_id, cr.course_name, t.teacher_name
+                            ORDER BY
+                                appearance_count DESC;
                         `
                         conn.query (
                             mysqlbody,
@@ -285,6 +299,113 @@ const modifyChoiceQuesDetail = (inputValues) => {
 
 }
 
+// 獲取所有課程
+const getAllCourse = () => {
+    return new Promise(
+        (resolve, reject) => {
+            pool.getConnection(
+                (connError, conn) => {
+                    if(connError) {
+                        reject(connError);
+                    }
+                    else {
+                        let mysqlbody = `
+                            SELECT
+                                *
+                            FROM
+                                db_course_lib
+                        `
+                        conn.query (
+                            mysqlbody,
+                            (error, result) => {
+                                if(error) {
+                                    console.log('幹SQL錯誤!!!!!!!!!!!', error);
+                                    reject(error);
+                                }
+                                else {
+                                    resolve(result);
+                                }
+                                conn.release();
+                            }
+                        )
+                    }
+                }
+            )
+        }
+    )
+}
+
+// 新增題目相關的課程年份
+const addCourseYearQues = (inputValues, lastInsertID) => {
+
+    const course = inputValues.course;
+    const examYear = inputValues.examYear;
+
+    return new Promise(
+        (resolve, reject) => {
+            pool.getConnection(
+                (connError, conn) => {
+                    if(connError) {
+                        reject(connError);
+                    }
+                    else {
+                        
+                        const insertPromises = examYear.map(
+                            year => {
+                              return new Promise(
+                                (insertResolve, insertReject) => {
+                    
+                                    let insertQuery = `
+                                        INSERT INTO db_courseYearQues
+                                            (examYear, question_id, course_id)
+                                        VALUES
+                                            (${year}, ${lastInsertID}, ${course})
+                                    `
+                    
+                                    conn.query(
+                                        insertQuery,
+                                        (insertError) => {
+                                            if (insertError) {
+                                                insertReject(insertError);
+                                            }
+                                            else {
+                                                insertResolve();
+                                            }
+                                        }
+                                    );
+                    
+                                }
+                              );
+                            }
+                        );
+
+                        const handleError = (err) => {
+                            conn.rollback(
+                                () => {
+                                    conn.release();
+                                    reject(err);
+                                }
+                            );
+                        };
+                    
+                        Promise.all(insertPromises)
+                            .then(
+                                () => {
+                                conn.commit(
+                                    commitError => {
+                                    if (commitError) {
+                                        handleError(commitError);
+                                    }
+                                    else {
+                                        console.log('SQL終於成功了喔！');
+                                        conn.release();
+                                        resolve();
+                                    }
+                                    }
+                                );
+                                }
+                            )
+                            .catch(handleError);
 
 
 
@@ -293,6 +414,77 @@ const modifyChoiceQuesDetail = (inputValues) => {
 
 
 
+
+
+
+                    }
+                }
+            )
+        }
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+}
+
+// 刪除該題目相關的課程年份
+const removeCourseYearQuesByQuesID = (question_id) => {
+    return new Promise(
+        (resolve, reject) => {
+            pool.getConnection(
+                (connError, conn) => {
+                    if(connError) {
+                        reject(connError);
+                    }
+                    else {
+                        let mysqlbody = `
+                            DELETE FROM
+                                db_courseYearQues
+                            WHERE
+                                question_id = ${question_id};
+                        `
+                        conn.query (
+                            mysqlbody,
+                            (error, result) => {
+                                if(error) {
+                                    console.log('幹SQL錯誤!!!!!!!!!!!', error);
+                                    reject(error);
+                                }
+                                else {
+                                    resolve(result);
+                                }
+                                conn.release();
+                            }
+                        )
+                    }
+                }
+            )
+        }
+    )
+}
 
 
 
@@ -308,3 +500,6 @@ module.exports.addQues = addQues; // 新增題目
 module.exports.addChoiceQuesDetail = addChoiceQuesDetail; // 新增選擇題選項
 module.exports.modifyQues = modifyQues; // 修改題目
 module.exports.modifyChoiceQuesDetail = modifyChoiceQuesDetail; // 修改選擇題選項
+module.exports.getAllCourse = getAllCourse; // 獲取所有課程
+module.exports.addCourseYearQues = addCourseYearQues; // 新增題目相關的課程年份
+module.exports.removeCourseYearQuesByQuesID = removeCourseYearQuesByQuesID; // 刪除該題目相關的課程年份

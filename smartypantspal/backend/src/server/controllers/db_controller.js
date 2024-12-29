@@ -50,8 +50,10 @@ const db_addQuestion = (req, res) => {
       async() => {
 
         const lastInsertID = await db_model.addQues(inputValues)
-        const result = await db_model.addChoiceQuesDetail(inputValues, lastInsertID)
-        res.send(result)
+        await db_model.addChoiceQuesDetail(inputValues, lastInsertID)
+        await db_model.addCourseYearQues(inputValues, lastInsertID)
+
+        res.send()
 
       }
     )();
@@ -80,6 +82,8 @@ const db_modifyQuestion = (req, res) => {
 
         await db_model.modifyQues(inputValues)
         await db_model.modifyChoiceQuesDetail(inputValues)
+        await db_model.removeCourseYearQuesByQuesID(inputValues.question_id)
+        await db_model.addCourseYearQues(inputValues, inputValues.question_id)
         res.send()
 
       }
@@ -98,7 +102,21 @@ const db_modifyQuestion = (req, res) => {
 
 }
 
+const db_getAllCourse = (req, res) => {
 
+  db_model.getAllCourse()
+    .then(
+      (result) => {
+        res.send(result)
+      }
+    )
+    .catch(
+      (err) => {
+        res.send(err);
+      }
+    )
+  
+}
 
 
 
@@ -110,3 +128,4 @@ const db_modifyQuestion = (req, res) => {
 module.exports.db_getAllQuestion = db_getAllQuestion; // 獲取所有題目
 module.exports.db_addQuestion = db_addQuestion; // 新增題目
 module.exports.db_modifyQuestion = db_modifyQuestion; // 修改題目
+module.exports.db_getAllCourse = db_getAllCourse; // 獲取所有課程

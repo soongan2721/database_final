@@ -108,6 +108,26 @@
                         />
                     </n-form-item>
 
+                    <n-form-item label="課程" path="course" >
+                        <n-select
+                            :options="course_options"
+                            v-model:value="quesForm_value.course"
+                            class="selectStyle"
+                            placeholder="請選擇課程"
+                        />
+                    </n-form-item>
+
+                    <n-form-item label="年份" path="examYear" >
+                        <n-select 
+                            :options="year_options"
+                            v-model:value="quesForm_value.examYear"
+                            class="selectStyle"
+                            placeholder="請選擇年份"
+                            multiple
+                            
+                        />
+                    </n-form-item>
+
                     <n-form-item label="解釋" path="explain" v-if="show_quesFormExplain">
                         <n-input
                             v-model:value="quesForm_value.explain"
@@ -195,24 +215,7 @@
 
         <n-button-group v-if="show_quesTypeButtonGroup">
 
-            <!-- 上傳文件按鈕 -->
-            <n-upload
-                @change="handleUploadChange"
-                style="margin-right: 5px;"
-                :show-file-list="false"
-                accept=".csv, .xlsx"
-            >
-                <n-button>上傳{{ quesForm_value.question_type }}(CSV/XLSX)</n-button>
-            </n-upload>
-
-            <!-- 導出文件按鈕 -->
-            <div style="margin-right: 5px;">
-                <n-dropdown trigger="click" :options="options_exportCSV" @select="selectAction_exportCSV">
-                    <n-button>
-                        導出{{ quesForm_value.question_type }}
-                    </n-button>
-                </n-dropdown>
-            </div>
+            
             
             <!-- 新增題目按鈕 -->
             <n-button type="primary" animated @click="button_addQues" v-if="show_buttonAddQues">
@@ -261,7 +264,7 @@
 <script setup>
 
     
-    import { NButton, NEllipsis, useMessage, useDialog } from "naive-ui";
+    import { NButton, NEllipsis, useMessage, useDialog, logDark } from "naive-ui";
     import { onMounted, ref } from 'vue';
     import axios from 'axios';
     import { GetAllQuestionAPI, GetAllConceptAPI, addQuestionAPI, removeQuesAPI, modifyQuesAPI, GetConceptIdByNameAPI, addQuestionByCsvAPI, addConceptIfNotExistAPI, modifyQuesVerificationAPI } from'@/config/ApiRoutes';
@@ -271,11 +274,14 @@
     import { NTag } from 'naive-ui';
 
     import db_APIs from'@/config/db_ApiRoutes';
+
     import {
         db_get_AllQuestion,
         db_add_question,
         db_modify_question,
     } from "./dbAPI";
+
+    
 
 
 
@@ -285,6 +291,28 @@
     function create_choiceQuesTable_columns( {modify, remove, invalidate, verify} ) {
         return [
             { type: 'selection'},
+            {
+                title: "課程", key: "course_name", align: "center",
+                render(row) {
+
+                    
+                    return h(NEllipsis, { expandTrigger: 'click', lineClamp: 2 }, () => row.course_name);
+                }
+            },
+            {
+                title: "老師", key: "teacher_name", align: "center",
+                render(row) {
+            
+                    
+                    return h(NEllipsis, { expandTrigger: 'click', lineClamp: 2 }, () => row.teacher_name);
+                }
+            },
+            {
+                title: "年份", key: "years", align: "center",
+                render(row) {
+                    return h(NEllipsis, { expandTrigger: 'click', lineClamp: 2 }, () => row.years);
+                }
+            },
             {
                 title: "內容", key: "content", align: "center",
                 render(row) {
@@ -546,9 +574,11 @@
     }
 
     onMounted( () => {
+        
         // get_allQuestion()
         get_allConcept()
         db_get_allQuestion()
+        get_allCourse();
 
 
     });
@@ -559,9 +589,6 @@
         show_quesForm.value = true;
         show_quesFormQuesType.value = true;
         // 按新增按紐時清空新增表單的全部欄位(除了題目類型)
-        quesForm_value.value.degree = null
-        quesForm_value.value.concept_ids = null
-        quesForm_value.value.exam_type = null
         quesForm_value.value.content = null
         quesForm_value.value.option1 = null
         quesForm_value.value.option2 = null
@@ -569,6 +596,8 @@
         quesForm_value.value.option4 = null
         quesForm_value.value.answer = null
         quesForm_value.value.explain = null
+        quesForm_value.value.course = null
+        quesForm_value.value.examYear = null
 
     };
 
@@ -595,10 +624,6 @@
 
     const button_modifyQues = (row) => {
 
-        console.log('row: ', row);
-        console.log('quesForm_value.value: ', quesForm_value.value);
-        
-
         quesForm_eventType.value = '修改';
         show_quesForm.value = true;
         show_quesFormQuesType.value = false; // 修改時關閉題目類型選擇
@@ -616,6 +641,14 @@
             quesForm_value.value.option4 = row.option4
 
         }
+        
+        const course_id = course_options.value.find(item => item.label == row.course_name).value;
+        quesForm_value.value.course = course_id;
+
+        const examYear = row.years.split(', ').map(String);
+        quesForm_value.value.examYear = examYear
+        
+
 
     }
 
@@ -669,6 +702,32 @@
                 required: true,
                 message: "請輸入答案！",
                 trigger: "blur"
+        },
+        explain: {
+                required: true,
+                message: "請輸入答案！",
+                trigger: "blur"
+        },
+        course: {
+            required: true,
+            validator(rule, value) {
+                if (!value) {
+                    return new Error("請選擇課程！");
+                }
+                return true;
+            },
+            trigger: "change"
+        },
+        examYear: {
+            required: true,
+            validator(rule, value) {
+                if (Array.isArray(value) && value.length > 0) {
+                    return true;
+                } else {
+                    return new Error("請選擇年份！");
+                }
+            },
+            trigger: "change"
         }
     }
 
@@ -682,7 +741,9 @@
             option3: null,
             option4: null,
             answer: null,
-            explain: null
+            explain: null,
+            examYear: [],
+            course: null
         }
     );
 
@@ -742,6 +803,8 @@
         }
     ]
 
+
+
     const concept_options = ref([]);
 
     // 預設為選擇題，所以表單中這三個欄位是開啟(顯示)的
@@ -791,7 +854,7 @@
                             show_quesForm.value = false;
                             await db_modify_question(quesForm_value.value);
                             await db_get_allQuestion();
-                            message.success('題目新增成功')
+                            message.success('題目修改成功')
                         }
                         catch(error) {
                             message.error(error);
@@ -1681,8 +1744,66 @@
         choiceQuesTable_data.value = result.choiceQues
         shortAnsQuesTable_data.value = result.shortAnsQues
 
-        
     }
+
+    const currentYear = new Date().getFullYear(); // 使用 Date 物件抓取目前年份
+
+    // const year_options = ref(
+    //     Array.from(
+    //         { length: currentYear - 2000 + 1 },
+    //         (_, i) => currentYear - i
+    //     )
+    // );
+
+    const year_options = ref(
+        Array.from(
+            { length: currentYear - 2000 + 1 },
+            (_, i) => {
+                const year = currentYear - i;
+                return {
+                    label: year.toString(),
+                    value: year.toString()
+                };
+            }
+        )
+    );
+    
+    // // 監聽quesForm_value.examYear變化
+    // watch(
+    //     () => quesForm_value.value.examYear,
+    //     (newVal) => {
+    //         console.log("監聽到年份變更：", quesForm_value.value.examYear);
+    //     }
+    // );
+
+    const course_options = ref([]);
+
+    function get_allCourse() {
+        axios.get(db_APIs.db_getAllCourseAPI)
+            .then(
+                response => {
+                    course_options.value = response.data
+                        .map(
+                            course => (
+                                {
+                                    value: course.course_id,
+                                    label: course.course_name
+                                }
+                            )
+                        );
+                }
+            )
+            .catch(
+                error => {
+                    message.error("錯誤!!!!!，課程獲取失敗");
+                }
+            )
+    }
+
+
+
+
+
 
 
 

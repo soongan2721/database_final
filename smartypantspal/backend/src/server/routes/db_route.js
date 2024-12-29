@@ -6,6 +6,8 @@ router.get('/db_getAllQuestion',db_controller.db_getAllQuestion);
 router.post('/db_addQuestion',db_controller.db_addQuestion);
 router.post('/db_modifyQuestion',db_controller.db_modifyQuestion);
 router.get('/db_getAllCourse',db_controller.db_getAllCourse);
+router.get('/db_getAllTeacher',db_controller.db_getAllTeacher);
+
 
 
 

@@ -118,7 +118,21 @@ const db_getAllCourse = (req, res) => {
   
 }
 
+const db_getAllTeacher = (req, res) => {
 
+  db_model.getAllTeacher()
+    .then(
+      (result) => {
+        res.send(result)
+      }
+    )
+    .catch(
+      (err) => {
+        res.send(err);
+      }
+    )
+  
+}
 
 
 
@@ -129,3 +143,4 @@ module.exports.db_getAllQuestion = db_getAllQuestion; // 獲取所有題目
 module.exports.db_addQuestion = db_addQuestion; // 新增題目
 module.exports.db_modifyQuestion = db_modifyQuestion; // 修改題目
 module.exports.db_getAllCourse = db_getAllCourse; // 獲取所有課程
+module.exports.db_getAllTeacher = db_getAllTeacher; // 獲取所有老師

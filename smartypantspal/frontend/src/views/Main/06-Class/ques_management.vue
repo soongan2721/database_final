@@ -149,6 +149,94 @@
         </n-card>
     </n-modal>
 
+
+    <!-- 搜尋表單 -->
+    <n-modal v-model:show="show_searchForm">
+        <n-card style="width: 400px;" :style="{ fontSize: fontSize + 'px' }">
+
+            <h2 style="text-align: center; margin-top: 0px">搜尋</h2>
+
+            <n-form
+                ref="quesForm_ref"
+                label-placement="left"
+                :label-width="80"
+                :model="quesForm_value"
+                :rules="quesForm_rules"
+                class="form_style"
+            >
+                <n-scrollbar style="max-height: 80vh;" >
+
+                    <n-form-item label="教師"  >
+
+                        <n-input-group>
+                            <n-input
+                               v-model:value="quesForm_value.teacher"
+                                type="textarea"
+                                placeholder="請輸入老師"
+                                :autosize="{minRows: 1}"
+                                style="width: calc(100% - 100px); margin-right: 5px;"
+                            />
+                        </n-input-group>
+
+                    </n-form-item>
+                    
+                    <n-form-item label="課程"  >
+
+                        <n-input-group>
+                            <n-input
+                                v-model:value="quesForm_value.course"
+                                type="textarea"
+                                placeholder="請輸入課程"
+                                :autosize="{minRows: 1}"
+                                style="width: calc(100% - 100px); margin-right: 5px;"
+                            />
+                        </n-input-group>
+
+                    </n-form-item>
+
+                    <n-form-item label="年份"  >
+                        <n-select 
+                            :options="year_options"
+                            v-model:value="quesForm_value.examYear"
+                            class="selectStyle"
+                            placeholder="請選擇年份"
+                        />
+                    </n-form-item>
+
+                    <n-form-item style="justify-items: center; align-items: center; margin-top: 10px; height: 40px;">
+                        <n-button @click="button_submitSearchForm">
+                            搜尋
+                        </n-button>
+                    </n-form-item>
+
+                </n-scrollbar>
+            </n-form>
+        </n-card>
+    </n-modal>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <!-- for csv export -->
     <n-data-table
         ref="quesTableExportCSV_ref"
@@ -213,9 +301,12 @@
 
         
 
-        <n-button-group v-if="show_quesTypeButtonGroup">
+        <n-button-group v-if="show_quesTypeButtonGroup" style="gap: 3px;">
 
-            
+            <!-- 搜尋按鈕 -->
+            <n-button type="primary" animated @click="button_search" v-if="show_buttonAddQues" >
+                搜尋
+            </n-button>
             
             <!-- 新增題目按鈕 -->
             <n-button type="primary" animated @click="button_addQues" v-if="show_buttonAddQues">
@@ -578,7 +669,8 @@
         // get_allQuestion()
         get_allConcept()
         db_get_allQuestion()
-        get_allCourse();
+        get_allCourse()
+        get_allTeacher()
 
 
     });
@@ -743,7 +835,8 @@
             answer: null,
             explain: null,
             examYear: [],
-            course: null
+            course: null,
+            teacher: null
         }
     );
 
@@ -1799,6 +1892,56 @@
                 }
             )
     }
+
+    const show_searchForm = ref(false)
+
+    function button_search() {
+        show_searchForm.value = true;
+        quesForm_value.value.teacher = null
+        quesForm_value.value.course = null
+        quesForm_value.value.examYear = null
+    }
+
+    const teacher_options = ref([]);
+
+    function get_allTeacher() {
+        axios.get(db_APIs.db_getAllTeacherAPI)
+            .then(
+                response => {
+                    teacher_options.value = response.data
+                        .map(
+                            teacher => (
+                                {
+                                    value: teacher.teacher_id,
+                                    label: teacher.teacher_name
+                                }
+                            )
+                        );
+                }
+            )
+            .catch(
+                error => {
+                    message.error("錯誤!!!!!，課程獲取失敗");
+                }
+            )
+    }
+
+    function button_submitSearchForm() {
+        console.log(quesForm_value.value.teacher);
+        console.log(quesForm_value.value.course);
+        console.log(quesForm_value.value.examYear);
+        
+        
+    }
+
+
+
+
+
+
+
+
+
 
 
 

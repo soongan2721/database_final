@@ -486,7 +486,40 @@ const removeCourseYearQuesByQuesID = (question_id) => {
     )
 }
 
-
+const getAllTeacher = () => {
+    return new Promise(
+        (resolve, reject) => {
+            pool.getConnection(
+                (connError, conn) => {
+                    if(connError) {
+                        reject(connError);
+                    }
+                    else {
+                        let mysqlbody = `
+                            SELECT
+                                *
+                            FROM
+                                db_teacher_lib
+                        `
+                        conn.query (
+                            mysqlbody,
+                            (error, result) => {
+                                if(error) {
+                                    console.log('幹SQL錯誤!!!!!!!!!!!', error);
+                                    reject(error);
+                                }
+                                else {
+                                    resolve(result);
+                                }
+                                conn.release();
+                            }
+                        )
+                    }
+                }
+            )
+        }
+    )
+}
 
 
 
@@ -503,3 +536,4 @@ module.exports.modifyChoiceQuesDetail = modifyChoiceQuesDetail; // 修改選擇�
 module.exports.getAllCourse = getAllCourse; // 獲取所有課程
 module.exports.addCourseYearQues = addCourseYearQues; // 新增題目相關的課程年份
 module.exports.removeCourseYearQuesByQuesID = removeCourseYearQuesByQuesID; // 刪除該題目相關的課程年份
+module.exports.getAllTeacher = getAllTeacher; // 獲取所有老師

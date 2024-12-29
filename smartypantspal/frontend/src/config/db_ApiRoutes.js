@@ -5,6 +5,7 @@ const db_APIs = {
     db_addQuestionAPI: `${BaseRoute}/db_api/db_addQuestion`, // 新增題目
     db_modifyQuestionAPI: `${BaseRoute}/db_api/db_modifyQuestion`, // 修改題目
     db_getAllCourseAPI: `${BaseRoute}/db_api/db_getAllCourse`, // 獲取所有課程
+    db_getAllTeacherAPI: `${BaseRoute}/db_api/db_getAllTeacher`, // 獲取所有老師
 }
 
 export default db_APIs;

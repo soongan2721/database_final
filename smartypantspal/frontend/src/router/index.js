@@ -27,7 +27,7 @@ const routes = [
             {
                 path: 'home',
                 name: 'Home',
-                component: () => import('../views/Main/01-Home.vue'),
+                component: () => import('../views/Main/06-Class.vue'),
             },
 
             {
@@ -204,14 +204,7 @@ const check_function = async (to, from, next) => {
 };
 
 // Add navigation guard to check authentication before each route
-router.beforeEach(async (to, from, next) => {
-    const result = await check_function(to, from);
-    if (result === true && flag == false) {
-        next();
-    } else {
-        next(result);
-    }
-});
+
 
 // Export router instance
 export default router;

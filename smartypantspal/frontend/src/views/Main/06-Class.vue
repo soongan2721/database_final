@@ -14,6 +14,14 @@
                 <concept_management />
             </n-tab-pane> -->
 
+            <n-tab-pane name="course_management" tab="課程管理" class="tabPane_style">
+                <course_management />
+            </n-tab-pane>
+
+            <n-tab-pane name="teacher_management" tab="老師管理" class="tabPane_style">
+                <teacher_management />
+            </n-tab-pane>
+
             <n-tab-pane name="ques_management" tab="題目管理" class="tabPane_style">
                 <ques_management />
             </n-tab-pane>
@@ -52,6 +60,10 @@
     import concept_management from './06-Class/concept_management.vue'
     import registry_management from './06-Class/registry_management.vue'
     import courseYearQues from './06-Class/courseYearQues.vue'
+    import course_management from './06-Class/course_management.vue'
+    import teacher_management from './06-Class/teacher_management.vue'
+    
+    
     import { useMessage } from 'naive-ui';
 
     const router = useRouter();

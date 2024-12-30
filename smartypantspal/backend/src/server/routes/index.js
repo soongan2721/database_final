@@ -128,7 +128,7 @@ router.post('/api/loginn',
               action: '登入',
               username: request.session.username
             }
-            articleModule.addRecord(inputValues);
+            // articleModule.addRecord(inputValues);
 
             // 紀錄登入行為 END -----------------------------------------------
 

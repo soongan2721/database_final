@@ -89,13 +89,28 @@ const getAllShortAnsQues = () => {
                     else {
                         let mysqlbody = `
                             SELECT
-                                question_id,
-                                content,
-                                answer
+                                cr.course_name,
+                                t.teacher_name,
+                                q.question_id,
+                                q.content,
+                                q.answer,
+                                GROUP_CONCAT(DISTINCT cyq.examYear ORDER BY cyq.examYear DESC SEPARATOR ', ') AS years,
+                                COUNT(cyq.question_id) AS appearance_count
                             FROM
-                                db_question_lib
+                                db_course_lib AS cr
+                            JOIN
+                                db_courseyearques AS cyq ON cr.course_id = cyq.course_id
+                            JOIN
+                                db_question_lib AS q ON cyq.question_id = q.question_id
+
+                            JOIN
+                                db_teacher_lib AS t ON cr.teacher_id = t.teacher_id
                             WHERE
-                                question_type = '簡答題';
+                                q.question_type = '簡答題'
+                            GROUP BY
+                                q.question_id, cr.course_name, t.teacher_name
+                            ORDER BY
+                                appearance_count DESC;
                         `
                         conn.query (
                             mysqlbody,
@@ -311,9 +326,17 @@ const getAllCourse = () => {
                     else {
                         let mysqlbody = `
                             SELECT
-                                *
+                                c.course_id,
+                                c.course_name,
+                                t.teacher_name
                             FROM
-                                db_course_lib
+                                gpt_database.db_course_lib c
+                            JOIN
+                                gpt_database.db_teacher_lib t
+                            ON
+                                c.teacher_id = t.teacher_id
+                            ORDER BY
+                                c.course_id DESC;
                         `
                         conn.query (
                             mysqlbody,
@@ -406,7 +429,7 @@ const addCourseYearQues = (inputValues, lastInsertID) => {
                                 }
                             )
                             .catch(handleError);
-                            
+
                     }
                 }
             )
@@ -465,6 +488,8 @@ const getAllTeacher = () => {
                                 *
                             FROM
                                 db_teacher_lib
+                            ORDER BY
+                                teacher_id DESC
                         `
                         conn.query (
                             mysqlbody,
@@ -485,6 +510,160 @@ const getAllTeacher = () => {
         }
     )
 }
+
+const removeTeacher = (teacher_id) => {
+    return new Promise(
+        (resolve, reject) => {
+            pool.getConnection(
+                (connError, conn) => {
+                    if(connError) {
+                        reject(connError);
+                    }
+                    else {
+                        let mysqlbody = `
+                            DELETE FROM
+                                db_teacher_lib
+                            WHERE
+                                teacher_id = ${teacher_id};
+                        `
+                        conn.query (
+                            mysqlbody,
+                            (error, result) => {
+                                if(error) {
+                                    console.log('幹SQL錯誤!!!!!!!!!!!', error);
+                                    reject(error);
+                                }
+                                else {
+                                    resolve(result);
+                                }
+                                conn.release();
+                            }
+                        )
+                    }
+                }
+            )
+        }
+    )
+}
+
+const addTeacher = (teacher_name) => {
+    return new Promise(
+        (resolve, reject) => {
+            pool.getConnection(
+                (connError, conn) => {
+                    if(connError) {
+                        reject(connError);
+                    }
+                    else {
+                        let mysqlbody = `
+                            INSERT INTO db_teacher_lib
+                                (teacher_name)
+                            VALUES
+                                ('${teacher_name}');
+                        `
+                        conn.query (
+                            mysqlbody,
+                            (error, result) => {
+                                if(error) {
+                                    console.log('幹SQL錯誤!!!!!!!!!!!', error);
+                                    reject(error);
+                                }
+                                else {
+                                    resolve(result);
+                                }
+                                conn.release();
+                            }
+                        )
+                    }
+                }
+            )
+        }
+    )
+}
+
+const removeCourse = (course_id) => {
+    return new Promise(
+        (resolve, reject) => {
+            pool.getConnection(
+                (connError, conn) => {
+                    if(connError) {
+                        reject(connError);
+                    }
+                    else {
+                        let mysqlbody = `
+                            DELETE FROM
+                                db_course_lib
+                            WHERE
+                                course_id = ${course_id};
+                        `
+                        conn.query (
+                            mysqlbody,
+                            (error, result) => {
+                                if(error) {
+                                    console.log('幹SQL錯誤!!!!!!!!!!!', error);
+                                    reject(error);
+                                }
+                                else {
+                                    resolve(result);
+                                }
+                                conn.release();
+                            }
+                        )
+                    }
+                }
+            )
+        }
+    )
+}
+
+const addCourse = (course_name, teacher_id) => {
+    return new Promise(
+        (resolve, reject) => {
+            pool.getConnection(
+                (connError, conn) => {
+                    if(connError) {
+                        reject(connError);
+                    }
+                    else {
+                        let mysqlbody = `
+                            INSERT INTO db_course_lib
+                                (course_name, teacher_id)
+                            VALUES
+                                ('${course_name}', '${teacher_id}');
+                        `
+                        conn.query (
+                            mysqlbody,
+                            (error, result) => {
+                                if(error) {
+                                    console.log('幹SQL錯誤!!!!!!!!!!!', error);
+                                    reject(error);
+                                }
+                                else {
+                                    resolve(result);
+                                }
+                                conn.release();
+                            }
+                        )
+                    }
+                }
+            )
+        }
+    )
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -975,7 +1154,55 @@ const getShortAnsQuesByCourseAndYear = (courseName, Year) => {
 };
 
 
-
+const getQuestionsByTeacherAndCourse = (teacherName, courseName) => {
+    return new Promise((resolve, reject) => {
+        pool.getConnection((connError, conn) => {
+            if (connError) {
+                reject(connError);
+            } else {
+                const query = `
+                    SELECT
+                        cr.course_name,
+                        t.teacher_name,
+                        q.question_id,
+                        q.content,
+                        q.answer,
+                        cqd.option1,
+                        cqd.option2,
+                        cqd.option3,
+                        cqd.option4,
+                        cqd.answer_explain,
+                        GROUP_CONCAT(DISTINCT cyq.examYear ORDER BY cyq.examYear DESC) AS years,
+                        COUNT(cyq.question_id) AS appearance_count
+                    FROM
+                        db_teacher_lib AS t
+                    JOIN
+                        db_course_lib AS cr ON t.teacher_id = cr.teacher_id
+                    JOIN
+                        db_courseyearques AS cyq ON cr.course_id = cyq.course_id
+                    JOIN
+                        db_question_lib AS q ON cyq.question_id = q.question_id
+                    LEFT JOIN
+                        db_choiceques_detail AS cqd ON q.question_id = cqd.question_id
+                    WHERE
+                        t.teacher_name = ? AND cr.course_name = ?
+                    GROUP BY
+                        q.question_id, cr.course_name, t.teacher_name
+                    ORDER BY
+                        appearance_count DESC;
+                `;
+                conn.query(query, [teacherName, courseName], (error, result) => {
+                    conn.release();
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(result);
+                    }
+                });
+            }
+        });
+    });
+};
 
 
 
@@ -1004,5 +1231,10 @@ module.exports = {
     getAllCourse,
     addCourseYearQues,
     removeCourseYearQuesByQuesID,
-    getAllTeacher
+    getAllTeacher,
+    removeTeacher,
+    addTeacher,
+    removeCourse,
+    addCourse,
+    getQuestionsByTeacherAndCourse
 };

@@ -3,21 +3,21 @@
     <n-layout class="body" :style="{ fontSize: fontSize + 'px' }"> 
       <!-- 頁面頂部導航欄 -->
       <n-layout-header position="fixed" bordered>
-        <n-flex class="nav_bar" justify="space-around" size="large">
+        <n-flex class="nav_bar" justify="center" size="large">
           <!-- 應用標題 -->
-          <div class="title">SmartyPantsPal</div>
+          <div class="title" >考古題管理系統</div>
           <!-- 自定義導航欄組件 -->
           <n-flex vertical justify="center">
-            <navigationbar :NewPermissions="props.NewPermissions" />
+            <!-- <navigationbar :NewPermissions="props.NewPermissions" /> -->
           </n-flex>
           <!-- 用戶功能 -->
-          <n-flex class="font-adjust-buttons" align="center" v-if="isMenuVisible">
+          <!-- <n-flex class="font-adjust-buttons" align="center" v-if="isMenuVisible">
             <n-button-group>
               <n-button @click="smallFont" :disabled="fontSize <= 11">小</n-button>
               <n-button @click="largeFont" :disabled="fontSize >= 19">大</n-button>
             </n-button-group>
-          </n-flex>
-          <User :NewPermissions="props.NewPermissions" />
+          </n-flex> -->
+          <!-- <User :NewPermissions="props.NewPermissions" /> -->
         </n-flex>
       </n-layout-header>
   
@@ -71,63 +71,16 @@
           </router-view>
   
           <!-- 浮動按鈕 -->
-          <div class="floatingButtonWrapper">
+          <!-- <div class="floatingButtonWrapper">
             <n-float-button type="primary" @click="showModal = true" width="70px" height="70px" v-if="isPermitted()">
               <n-icon size="30px">
                 <Icon />
               </n-icon>
             </n-float-button>
-          </div>
+          </div> -->
           
           <!-- 彈出卡片 -->
-          <transition name="fade">
-                    <n-card
-                        v-if="showModal"
-                        title="小幫手"
-                        closable
-                        @close="handleClose"
-                        :class="{ lightheme: theme, darktheme: !theme }"
-                        :style="{ position: 'fixed' }"
-                    >
-                        <!-- 左上角可調整大小的手柄 -->
-                        <div class="resize-handle" @mousedown="startResizing"></div>
-
-                        <template #header>
-                        <div class="header">
-                            <n-icon @click="showModal = false" size="20px" class="close-icon">
-                            <Icon name="close" />
-                            </n-icon>
-                            <span>小幫手</span>
-                        </div>
-                        </template>
-
-                        <!-- 聊天內容區域 -->
-                        <div class="chat-container">
-                        <n-scrollbar ref="scrolldown" style="height: 355px" trigger="none">
-                            <div class="messages">
-                            <div
-                                v-for="(msg, index) in messages"
-                                :key="msg.id"
-                                class="message"
-                                :class="msg.arrowDirection"
-                            >
-                            <div class="message-content" v-html="renderMarkdown(msg.text)"></div>
-                            </div>
-                            </div>
-                        </n-scrollbar>
-                        <div class="input-wrapper">
-                            <n-input
-                            v-model:value="newMessage"
-                            @keyup.enter="sendMessage"
-                            :placeholder="placeholder"
-                            class="input"
-                            :disabled = "input_flag"
-                            :loading = "input_flag"
-                            />
-                        </div>
-                        </div>
-                    </n-card>
-                    </transition>
+          
 
         </div>
       </n-layout-content>

@@ -15,9 +15,28 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
+
+
+
 -- 傾印 gpt_database 的資料庫結構
 CREATE DATABASE IF NOT EXISTS `gpt_database` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
 USE `gpt_database`;
+
+CREATE TABLE record_lib
+(
+	record_id INT NOT NULL AUTO_INCREMENT,
+	record_date text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ,
+	record_time text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ,
+	`username` text CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci DEFAULT NULL ,
+	record_action text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ,
+	PRIMARY KEY (record_id)
+);
+
+
+
+
+
+
 
 -- 傾印  資料表 gpt_database.choicequestion_detail 結構
 CREATE TABLE IF NOT EXISTS `choicequestion_detail` (
@@ -92,6 +111,19 @@ REPLACE INTO `concept_lib` (`concept_id`, `concept_name`) VALUES
 	(8, '概念8'),
 	(9, '概念9'),
 	(10, '概念10');
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 -- 傾印  資料表 gpt_database.db_choiceques_detail 結構
 CREATE TABLE IF NOT EXISTS `db_choiceques_detail` (
@@ -1156,7 +1188,7 @@ REPLACE INTO `db_question_lib` (`question_id`, `content`, `question_type`, `answ
 	(199, '這是第 199 題的問題內容。', '選擇題', 'A'),
 	(200, '這是第 200 題的問題內容。', '選擇題', 'D');
 
-INSERT INTO `db_choiceques_detail` (`detail_id`, `option1`, `option2`, `option3`, `option4`, `answer_explain`, `question_id`) VALUES
+REPLACE INTO `db_choiceques_detail` (`detail_id`, `option1`, `option2`, `option3`, `option4`, `answer_explain`, `question_id`) VALUES
 	(1, '選項A', '選項B', '選項C', '選項D', '這是第 101 題的解釋。', 101),
 	(2, '選項A', '選項B', '選項C', '選項D', '這是第 102 題的解釋。', 102),
 	(3, '選項A', '選項B', '選項C', '選項D', '這是第 103 題的解釋。', 103),

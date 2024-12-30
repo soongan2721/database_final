@@ -285,6 +285,7 @@
             </n-icon>
             &nbsp;一鍵刪除
         </n-button>
+
         <div>
             <n-button-group  v-if="show_quesTypeButtonGroup">
                 <n-button round @click="button_showChoiceQuesTable">
@@ -370,9 +371,16 @@
         db_get_AllQuestion,
         db_add_question,
         db_modify_question,
+
+        db_get_AllQuestionByTeacherNameAPI,
+        db_get_AllQuestionByCourseNameAPI,
+        db_get_AllQuestionByYearAPI,
+        db_get_AllQuestionByTeacherAndYearAPI,
+        db_get_AllQuestionByCourseAndYearAPI,
+        db_get_QuestionsByTeacherAndCourseAPI,
+
     } from "./dbAPI";
 
-    
 
 
 
@@ -488,6 +496,28 @@
             { type: 'selection', align: "center"},
             // { title: "題目ID", key: "question_id", align: "center"},
             // { title: "測驗類型", key: "exam_type", align: "center"},
+            {
+                title: "課程", key: "course_name", align: "center",
+                render(row) {
+
+                    
+                    return h(NEllipsis, { expandTrigger: 'click', lineClamp: 2 }, () => row.course_name);
+                }
+            },
+            {
+                title: "老師", key: "teacher_name", align: "center",
+                render(row) {
+            
+                    
+                    return h(NEllipsis, { expandTrigger: 'click', lineClamp: 2 }, () => row.teacher_name);
+                }
+            },
+            {
+                title: "年份", key: "years", align: "center",
+                render(row) {
+                    return h(NEllipsis, { expandTrigger: 'click', lineClamp: 2 }, () => row.years);
+                }
+            },
             {
                 title: "內容", key: "content", align: "center",
                 render(row) {
@@ -639,35 +669,35 @@
     //         );
     // }
 
-    const get_allConcept = () => {
-        axios.get(GetAllConceptAPI)
-            .then(
-                response => {
-                    // 過濾掉'default'概念
-                    concept_options.value = response.data
-                        .filter(concept => concept.concept_name !== 'default')
-                            .map(
-                                concept => (
-                                    {
-                                        value: concept.concept_id,
-                                        label: concept.concept_name
-                                    }
-                                )
-                            );
+    // const get_allConcept = () => {
+    //     axios.get(GetAllConceptAPI)
+    //         .then(
+    //             response => {
+    //                 // 過濾掉'default'概念
+    //                 concept_options.value = response.data
+    //                     .filter(concept => concept.concept_name !== 'default')
+    //                         .map(
+    //                             concept => (
+    //                                 {
+    //                                     value: concept.concept_id,
+    //                                     label: concept.concept_name
+    //                                 }
+    //                             )
+    //                         );
 
-                }
-            )
-            .catch(
-                error => {
-                    message.error("錯誤!!!!!，概念獲取失敗");
-                }
-            )
-    }
+    //             }
+    //         )
+    //         .catch(
+    //             error => {
+    //                 message.error("錯誤!!!!!，概念獲取失敗");
+    //             }
+    //         )
+    // }
 
     onMounted( () => {
         
         // get_allQuestion()
-        get_allConcept()
+        // get_allConcept()
         db_get_allQuestion()
         get_allCourse()
         get_allTeacher()
@@ -1896,6 +1926,11 @@
     const show_searchForm = ref(false)
 
     function button_search() {
+
+        console.log(shortAnsQuesTable_data.value);
+        
+
+
         show_searchForm.value = true;
         quesForm_value.value.teacher = null
         quesForm_value.value.course = null
@@ -1926,12 +1961,59 @@
             )
     }
 
-    function button_submitSearchForm() {
-        console.log(quesForm_value.value.teacher);
-        console.log(quesForm_value.value.course);
-        console.log(quesForm_value.value.examYear);
+    async function button_submitSearchForm() {
+
+        const teacher = quesForm_value.value.teacher;
+        const course = quesForm_value.value.course;
+        const examYear = quesForm_value.value.examYear;
+
+        console.log(examYear);
         
-        
+
+        // 教師單獨
+        if(teacher && !course && !examYear) {
+            const result = await db_get_AllQuestionByTeacherNameAPI(teacher, course, examYear)
+            choiceQuesTable_data.value = result.choiceQues
+            shortAnsQuesTable_data.value = result.shortAnsQues
+        }
+        // 教師 + 課程
+        else if(teacher && course && !examYear) {
+            const result = await db_get_QuestionsByTeacherAndCourseAPI(teacher, course, examYear)
+            choiceQuesTable_data.value = result.choiceQues
+            shortAnsQuesTable_data.value = result.shortAnsQues
+        }
+        // 課程單獨
+        else if(!teacher && course && !examYear) {
+            const result = await db_get_AllQuestionByCourseNameAPI(teacher, course, examYear)
+            choiceQuesTable_data.value = result.choiceQues
+            shortAnsQuesTable_data.value = result.shortAnsQues
+        }
+        // 年份單獨
+        else if(!teacher && !course && examYear) {
+            const result = await db_get_AllQuestionByYearAPI(teacher, course, examYear)
+            choiceQuesTable_data.value = result.choiceQues
+            shortAnsQuesTable_data.value = result.shortAnsQues
+        }
+        // 教師 + 年份
+        else if( (teacher && !course && examYear) || (teacher && course && examYear) ) {
+            const result = await db_get_AllQuestionByTeacherAndYearAPI(teacher, course, examYear)
+            choiceQuesTable_data.value = result.choiceQues
+            shortAnsQuesTable_data.value = result.shortAnsQues
+        }
+        // 課程 + 年份
+        else if(!teacher && course && examYear) {
+            const result = await db_get_AllQuestionByCourseAndYearAPI(teacher, course, examYear)
+            choiceQuesTable_data.value = result.choiceQues
+            shortAnsQuesTable_data.value = result.shortAnsQues
+        }
+        else { // 全空
+            const result = await db_get_AllQuestion()
+            choiceQuesTable_data.value = result.choiceQues
+            shortAnsQuesTable_data.value = result.shortAnsQues
+        }
+
+        show_searchForm.value = false;
+
     }
 
 

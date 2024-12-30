@@ -79,3 +79,171 @@ export const db_modify_question = async(inputValues) => {
 }
 
 
+
+
+
+
+
+
+
+
+export const db_get_AllQuestionByCourseNameAPI = async(teacher, course, examYear) => {
+    try {
+        console.log(teacher, course, examYear)
+        const response = await axios.get(
+            db_APIs.db_getAllQuestionByCourseNameAPI,
+            {
+                params: {
+                    Teacher: teacher,
+                    courseName: course,
+                    Year: examYear,
+                },
+                withCredentials: true
+            }
+        )
+        console.log(response.data);
+        
+        return response.data;
+
+    }
+    catch(error) {
+        console.log('題目搜尋錯誤: ', error);
+        return(error)
+    }
+}
+
+export const db_get_AllQuestionByTeacherNameAPI = async(teacher, course, examYear) => {
+    try {
+        console.log(teacher, course, examYear);
+        
+        const response = await axios.get(
+            db_APIs.db_getAllQuestionByTeacherNameAPI,
+            {
+                params: {
+                    Teacher: teacher,
+                    courseName: course,
+                    Year: examYear,
+                },
+                withCredentials: true
+            }
+        )
+        console.log(response.data);
+        
+        return response.data;
+
+    }
+    catch(error) {
+        console.log('題目搜尋錯誤: ', error);
+        return(error)
+    }
+}
+
+export const db_get_AllQuestionByYearAPI = async(teacher, course, examYear) => {
+    try {
+
+        console.log(examYear);
+        
+
+
+
+
+        const response = await axios.get(
+            db_APIs.db_getAllQuestionByYearAPI,
+            {
+                params: {
+                    Teacher: teacher,
+                    courseName: course,
+                    Year: examYear,
+                },
+                withCredentials: true
+            }
+        )
+
+        return response.data;
+
+    }
+    catch(error) {
+        console.log('題目搜尋錯誤: ', error);
+        return(error)
+    }
+}
+
+export const db_get_AllQuestionByTeacherAndYearAPI = async(teacher, course, examYear) => {
+    try {
+
+        const response = await axios.get(
+            db_APIs.db_getAllQuestionByTeacherAndYearAPI,
+            {
+                params: {
+                    Teacher: teacher,
+                    courseName: course,
+                    Year: examYear,
+                },
+                withCredentials: true
+            }
+        )
+
+        return response.data;
+
+    }
+    catch(error) {
+        console.log('題目搜尋錯誤: ', error);
+        return(error)
+    }
+}
+
+export const db_get_AllQuestionByCourseAndYearAPI = async(teacher, course, examYear) => {
+    try {
+
+        console.log(teacher, course, examYear);
+        
+        const response = await axios.get(
+            db_APIs.db_getAllQuestionByCourseAndYearAPI,
+            {
+                params: {
+                    Teacher: teacher,
+                    courseName: course,
+                    Year: examYear,
+                },
+                withCredentials: true
+            }
+        )
+
+        return response.data;
+
+    }
+    catch(error) {
+        console.log('題目搜尋錯誤: ', error);
+        return(error)
+    }
+}
+
+export const db_get_QuestionsByTeacherAndCourseAPI = async(teacher, course, examYear) => {
+    try {
+
+        console.log(teacher, course, examYear);
+        
+        const response = await axios.get(
+            db_APIs.db_getQuestionsByTeacherAndCourseAPI,
+            {
+                params: {
+                    Teacher: teacher,
+                    courseName: course,
+                    Year: examYear,
+                },
+                withCredentials: true
+            }
+        )
+
+        return response.data;
+
+    }
+    catch(error) {
+        console.log('題目搜尋錯誤: ', error);
+        return(error)
+    }
+}
+
+
+
+
